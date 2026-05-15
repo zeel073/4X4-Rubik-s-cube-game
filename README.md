@@ -1,4 +1,4 @@
-# 4 × 4 Cube (WebGL)
+# 4 × 4 Cube (WebGL) - The game is live at https://zeel073.github.io/4X4-Rubik-s-cube-game/
 
 Interactive **4×4 Rubik’s-style cube** in the browser, rendered with **raw WebGL** (no Three.js). You can scramble, play manually, watch guided solutions, try a **custom sticker layout**, or run a **demo** shuffle-and-solve loop.
 
