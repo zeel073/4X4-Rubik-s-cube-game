@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4 X 4 Cube</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="bg-soft" aria-hidden="true"></div>
+
+  <main id="modeScreen" class="mode-screen" aria-label="Mode selection">
+    <section class="mode-card">
+      <h1 class="mode-title">4 X 4 Cube</h1>
+      <p class="mode-authors"></p>
+      <p class="mode-prompt">Select game mode to continue</p>
+      <div class="mode-actions">
+        <button id="modeSelectActiveBtn" type="button" class="btn btn-toggle btn-toggle-active">Active Mode</button>
+        <button id="modeSelectDemoBtn" type="button" class="btn btn-toggle">Demo Mode</button>
+      </div>
+    </section>
+  </main>
+
+  <main id="gameWorkspace" class="workspace workspace-hidden">
+    <section class="stage" aria-label="Cube view">
+      <div id="centerNotice" class="center-notice">Ready</div>
+      <div class="cube-row">
+        <div id="cubeCanvas" class="canvas-host"></div>
+        <div class="stage-side-panel">
+          <div class="move-legend">
+            <h3 class="legend-title">Move Notation Guide</h3>
+            <table class="legend-table">
+              <tr><td>U D L R F B</td><td>Face turns</td></tr>
+              <tr><td>'</td><td>Counterclockwise</td></tr>
+              <tr><td>2</td><td>Double turn</td></tr>
+              <tr><td>Uw Rw ...</td><td>Wide turns</td></tr>
+              <tr><td>M / M2</td><td>Middle slice turns</td></tr>
+            </table>
+          </div>
+          <div id="stageMoveLogBox" class="stage-moves is-hidden">
+            <h3 class="legend-title">Solution Steps</h3>
+            <div id="stageMoveLog" class="demo-log">No solution yet.</div>
+          </div>
+        </div>
+      </div>
+      <div id="centerColorPalette" class="tile-picker is-hidden" aria-label="Center color palette">
+        <button class="btn tile-color-btn palette-btn" type="button" data-color="U">White</button>
+        <button class="btn tile-color-btn palette-btn" type="button" data-color="D">Yellow</button>
+        <button class="btn tile-color-btn palette-btn" type="button" data-color="L">Orange</button>
+        <button class="btn tile-color-btn palette-btn" type="button" data-color="R">Red</button>
+        <button class="btn tile-color-btn palette-btn" type="button" data-color="F">Green</button>
+        <button class="btn tile-color-btn palette-btn" type="button" data-color="B">Blue</button>
+      </div>
+      <div class="global-speed-control">
+        <label for="solveSpeedRange" class="input-label">Rotation Speed</label>
+        <input id="solveSpeedRange" type="range" min="0.4" max="2.5" step="0.1" value="1.2" />
+      </div>
+      <button id="soundToggleBtn" type="button" class="btn">Sound: On</button>
+    </section>
+
+    <aside class="rail" aria-label="Controls">
+      <header class="rail-head">
+        <h1 class="rail-title">4 X 4 Cube</h1>
+        <p class="rail-tag"></p>
+      </header>
+
+      <div class="rail-status">
+        <span id="statusBadge" class="status pill pill--neutral">Ready</span>
+        <span id="moveCounter" class="move-count">Moves 0</span>
+      </div>
+
+      <section class="panel panel-mode" aria-label="Game mode">
+        <div class="panel-title-row">
+          <h2 class="panel-title">Mode</h2>
+          <span id="modeLabel" class="mode-label">Active Play</span>
+        </div>
+      </section>
+
+      <section id="activeStartPanel" class="panel" aria-label="Active start options">
+        <h2 class="panel-title">Choose Start</h2>
+        <div class="rail-actions">
+          <button id="scrambleStartBtn" type="button" class="btn">Shuffle 20</button>
+          <button id="customStartStateBtn" type="button" class="btn">Custom Start State</button>
+        </div>
+        <div id="customEditorPanel" class="is-hidden" style="margin-top:8px;">
+          <p class="panel-note">Click a sticker, then choose one of 6 colors.</p>
+          <p id="customCountsText" class="panel-note">Fill all 96 outer stickers (16 each color).</p>
+          <div class="playback-actions">
+            <button id="applyCustomStartBtn" type="button" class="btn btn-accent">Solve Custom State</button>
+            <button id="cancelCustomStartBtn" type="button" class="btn">Cancel</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="activeSolvePanel" class="panel" aria-label="Active solving controls">
+        <h2 class="panel-title">Active Play Controls</h2>
+        <div class="rail-actions">
+          <button id="giveUpSolveBtn" type="button" class="btn btn-accent">Give Up and Solve</button>
+          <button id="nextSolveStepBtn" type="button" class="btn">Next Step</button>
+        </div>
+        <div class="playback-actions" style="margin-top:8px;">
+          <button id="autoPlaySolveBtn" type="button" class="btn">Auto Play</button>
+          <button id="pauseSolveBtn" type="button" class="btn">Pause</button>
+        </div>
+        <div class="playback-actions" style="margin-top:8px;">
+          <button id="replayBtn" type="button" class="btn is-hidden">Replay</button>
+        </div>
+        <p id="activeFlowHint" class="panel-note">Choose a start option.</p>
+      </section>
+
+      <section id="demoPanel" class="panel is-hidden" aria-label="Demo controls">
+        <h2 class="panel-title">Demo Mode</h2>
+        <div class="playback-grid">
+          <label for="demoShuffleSelect" class="input-label">Shuffle</label>
+          <select id="demoShuffleSelect" class="select-input">
+            <option value="20">20</option>
+            <option value="40">40</option>
+            <option value="60">60</option>
+            <option value="80">80</option>
+            <option value="100">100</option>
+          </select>
+        </div>
+        <div class="rail-actions">
+          <button id="demoShuffleBtn" type="button" class="btn">Shuffle</button>
+          <button id="demoSolveBtn" type="button" class="btn btn-accent">Solve</button>
+        </div>
+        <div class="playback-actions" style="margin-top:8px;">
+          <button id="demoNextBtn" type="button" class="btn">Next Step</button>
+          <button id="demoAutoBtn" type="button" class="btn">Auto Play</button>
+        </div>
+        <div class="playback-actions" style="margin-top:8px;">
+          <button id="demoPauseBtn" type="button" class="btn">Pause</button>
+        </div>
+        <div class="playback-actions" style="margin-top:8px;">
+          <button id="demoReplayBtn" type="button" class="btn is-hidden">Replay</button>
+        </div>
+        <p class="panel-note">Solution moves shown next to cube.</p>
+      </section>
+
+      <div id="playerMovePanel" class="rail-moves">
+        <div id="moveButtons" class="rail-moves"></div>
+      </div>
+
+      <p class="rail-hint">Drag to orbit | Wheel to zoom | Space to scramble</p>
+    </aside>
+  </main>
+
+  <script src="./constants.js"></script>
+  <script src="./math-utils.js"></script>
+  <script src="./webgl-utils.js"></script>
+  <script src="./dom-elements.js"></script>
+  <script src="./shader-sources.js"></script>
+  <script src="./game-helpers.js"></script>
+  <script src="./main.js"></script>
+</body>
+</html>
